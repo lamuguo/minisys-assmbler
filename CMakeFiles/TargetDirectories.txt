@@ -1,3 +1,0 @@
-/home/lamuguo/code/tmp/minisys-assmbler/CMakeFiles/edit_cache.dir
-/home/lamuguo/code/tmp/minisys-assmbler/CMakeFiles/rebuild_cache.dir
-/home/lamuguo/code/tmp/minisys-assmbler/CMakeFiles/myassembler.dir

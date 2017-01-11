@@ -1,1 +1,0 @@
-/usr/bin/c++   -g   CMakeFiles/myassembler.dir/main.cpp.o CMakeFiles/myassembler.dir/assembler.cpp.o CMakeFiles/myassembler.dir/callAss.cpp.o  -o myassembler 
