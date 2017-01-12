@@ -1,7 +1,11 @@
 .idea/*
 CMakeCache.txt
 CMakeFiles/*
+CountNum.txt
+asmError.log
 cmake-build-debug/*
 cmake_install.cmake
 myassembler
 myassembler.cbp
+
+*.coe
