@@ -138,11 +138,8 @@ int assembler::Parser(string resultFile)
             if(HasError==-1)    //词法错误
             {
                 cout<<"Lexer error, EXPECTED [" << STACK.Depth[STACK.Top] << "]" << endl;
-                if(Error(ERROR_LEXICAL)==-1) //无法恢复
-                {
-                    Fail();
-                    return -1;
-                }
+                Fail();
+                return -1;
             }
         }
         else
@@ -160,7 +157,8 @@ int assembler::Deduction()
     LastRule=CurrentRule;  //保留前一个规则，可能有用
     cout<<"LastRule <"<<LastRule<<"> "<<STACK.Depth[STACK.Top]<<"  "<<TOKEN.ID;
     CurrentRule=ForcastTable[STACK.Depth[STACK.Top]-50][TOKEN.ID];
-    cout<<" CurrentRule <"<<CurrentRule << ">" << endl;
+    cout<<" CurrentRule <"<<CurrentRule << "> with [N" << STACK.Depth[STACK.Top]
+        << ", T" << TOKEN.ID << "]" << endl;
     if(CurrentRule==0) return -1;
     for(int i=0;i<=RULE_DEPTH;i++)
     {
@@ -201,6 +199,7 @@ void assembler::Fail()
 //扫描器核心程序，即词法分析
 int assembler::Scanner(int TypeOfToken)
 {
+    cout << "xfguo: Scanner() 0" << endl;
     TOKEN.ID=0;
     TOKEN.Idx=-1;
     for(int i=0;i<COMMOM_SIZE;i++)	TOKEN.Content[i]='\0';
@@ -243,11 +242,12 @@ int assembler::Scanner(int TypeOfToken)
                 }
                 return ScanEndl();
             }
-        case N_VARAA: //扫描T_DATA|T_IDNAME|T_DD|T_ORG_DATA
+        case N_VARAA: //扫描T_DATA|T_IDNAME|T_DD|T_ORG_DATA|T_CODE
             {
                 if(ScanIdname()==0) return 0;
                 ReadAString(Temp);
                 if(strcmp(Temp,"word")==0) { TOKEN.ID=T_DW; return 0; }
+                else if (strcmp(Temp, ".text") == 0) { TOKEN.ID = T_CODE; return 0; }
                 else if(strcmp(Temp,".data")==0) { TOKEN.ID=T_DATA; return 0; }
                 else if(strcmp(Temp,".org_data")==0) { TOKEN.ID=T_ORG_DATA; return 0; }
                 else { TOKEN.ID=ERROR_TERMINAL; return -1; }    //终止
@@ -305,6 +305,7 @@ int assembler::Scanner(int TypeOfToken)
         case N_CODEA: //扫描T_IDNAME|T_ORG_CODE
             {
                 if(ScanIdname()==0) return 0;
+                if (ScanCom() == 0) return 0;
                 ReadAString(Temp);
                 if(strcmp(Temp,".org_code")==0)  { TOKEN.ID=T_ORG_CODE; return 0; }
                 else { TOKEN.ID=ERROR_NCODEA; return -1; }     //可以修复的错误
@@ -326,20 +327,19 @@ int assembler::Scanner(int TypeOfToken)
                 if(ScanCom()==0&&TOKEN.ID!=T_ORG_CODE) return 0;
                 else { TOKEN.ID=ERROR_NCOM; return -1; }       //滤过一条指令，认为已经识别出T_ENDL
             }
-        case N_ORDERS:   //扫描T_IDNAME|T_END|T_ORG_CODE|T_COM
+        case N_ORDERS:   //扫描T_IDNAME|T_END|T_ORG_CODE|T_COM|T_CODE
             {
                 if(ScanIdname()==0) return 0;
-                char ch=fin.peek();
-                if(ch=='e'||ch=='E'){
-                    ReadAString(Temp);
-                    if(strcmp(Temp,"end")==0) { TOKEN.ID=T_END;return 0; }
-                    else if (ScanCom()==0) return 0;
-                    else { TOKEN.ID=ERROR_NORDERS; return -1; }	//可以修复的错误
+                if (ScanCom() == 0) return 0;
+                ReadAString(Temp);
+                if (strcmp(Temp, "end") == 0) {
+                    TOKEN.ID == T_END; return 0;
                 }
-                else{
-                    if(ScanCom()==0) return 0;
-                    else {TOKEN.ID=ERROR_NORDERS; return -1; } //可以修复的错误
+                if (strcmp(Temp, ".text") == 0) {
+                    TOKEN.ID = T_CODE; return 0;
                 }
+                TOKEN.ID = ERROR_NORDERS;
+                return -1;
             }
         case N_ADDR:    //扫描T_IDNAME|T_ADDR
             {
@@ -549,6 +549,7 @@ int assembler::ScanCom()
             return 0;
         }
     }
+    WriteAString();
     return -1;     //未找到，指令有误
 }
 //扫描T_IDNAME，正规式(a~z|A~Z|_)(0~9|a~z|A~Z|_)*，最长为99个字符
@@ -650,7 +651,7 @@ int assembler::Scan10Radix(int maxlen)
     if (TOKEN.Idx > maxlen) {
         return -1;
     }
-    if (!std::regex_match(Temp, std::regex("[0-9]*"))) {
+    if (!std::regex_match(Temp, std::regex("[+-]?[0-9]*"))) {
         return -1;
     }
     return 0;

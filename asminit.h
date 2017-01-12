@@ -18,24 +18,68 @@ void InitForcastTable(int ForcastTable[VN_NUM][VT_NUM])
 	ForcastTable[N_DATAA-50][T_ORG_DATA]=5;
 	ForcastTable[N_DATAA-50][T_IDNAME]=6;
 	ForcastTable[N_DATAA-50][T_DATA]=7;
+    ForcastTable[N_DATAA-50][T_CODE]=7;
     ForcastTable[N_ORG_DATA-50][T_ORG_DATA]=8;
 	ForcastTable[N_VARS-50][T_IDNAME]=9;
 	ForcastTable[N_VARS-50][T_DATA]=10;
 	ForcastTable[N_VARS-50][T_ORG_DATA]=10;
+    ForcastTable[N_VARS-50][T_CODE]=10;
 	ForcastTable[N_VAR-50][T_IDNAME]=11;
 	ForcastTable[N_VARA-50][T_COMMA]=12;
 	ForcastTable[N_VARA-50][T_ENDL]=13;
+    ForcastTable[N_VARA-50][T_CODE]=13;
 	ForcastTable[N_VARAA-50][T_DW]=14;
 	ForcastTable[N_VARAA-50][T_IDNAME]=15;
 	ForcastTable[N_VARAA-50][T_ORG_DATA]=15;
 	ForcastTable[N_VARAA-50][T_DATA]=15;
+    ForcastTable[N_VARAA-50][T_CODE] = 15;
     ForcastTable[N_DATAENDS-50][T_DATA]=16;
     ForcastTable[N_CODE-50][T_CODE]=17;
+    ForcastTable[N_CODE-50][T_FILEEND]=56;
     ForcastTable[N_CODESEG-50][T_CODE]=18;
-	ForcastTable[N_CODEA-50][T_ORG_CODE]=19;
+
 	ForcastTable[N_CODEA-50][T_IDNAME]=20;
-    ForcastTable[N_ORG_CODE-50][T_ORG_CODE]=21;
+    ForcastTable[N_CODEA-50][T_ORG_CODE]=20;
+    ForcastTable[N_CODEA-50][T_RCOM]=20;
+    ForcastTable[N_CODEA-50][T_SRCOM]=20;
+    ForcastTable[N_CODEA-50][T_SLLRCOM]=20;
+    ForcastTable[N_CODEA-50][T_ICOM]=20;
+    ForcastTable[N_CODEA-50][T_SICOM]=20;
+    ForcastTable[N_CODEA-50][T_LWICOM]=20;
+    ForcastTable[N_CODEA-50][T_JCOM]=20;
+    ForcastTable[N_CODEA-50][T_BICOM]=20;
+    ForcastTable[N_CODEA-50][T_PCOM]=20;
+    ForcastTable[N_CODEA-50][T_JBCOM]=20;
+    ForcastTable[N_CODEA-50][T_NOP]=20;
+    ForcastTable[N_CODEA-50][T_MRCOM]=20;
+    ForcastTable[N_CODEA-50][T_MFCRCOM]=20;
+    ForcastTable[N_CODEA-50][T_MULRCOM]=20;
+    ForcastTable[N_CODEA-50][T_SYSRCOM]=20;
+    ForcastTable[N_CODEA-50][T_JRCOM]=20;
+    ForcastTable[N_CODEA-50][T_BGICOM]=20;
+    ForcastTable[N_CODEA-50][T_CODE]=21;
+    ForcastTable[N_CODEA-50][T_FILEEND]=21;
+
     ForcastTable[N_SEG-50][T_IDNAME]=22;
+    ForcastTable[N_SEG-50][T_ORG_CODE]=55;
+    ForcastTable[N_SEG-50][T_RCOM]=55;
+    ForcastTable[N_SEG-50][T_SRCOM]=55;
+    ForcastTable[N_SEG-50][T_SLLRCOM]=55;
+    ForcastTable[N_SEG-50][T_ICOM]=55;
+    ForcastTable[N_SEG-50][T_SICOM]=55;
+    ForcastTable[N_SEG-50][T_LWICOM]=55;
+    ForcastTable[N_SEG-50][T_JCOM]=55;
+    ForcastTable[N_SEG-50][T_BICOM]=55;
+    ForcastTable[N_SEG-50][T_PCOM]=55;
+    ForcastTable[N_SEG-50][T_JBCOM]=55;
+    ForcastTable[N_SEG-50][T_NOP]=55;
+    ForcastTable[N_SEG-50][T_MRCOM]=55;
+    ForcastTable[N_SEG-50][T_MFCRCOM]=55;
+    ForcastTable[N_SEG-50][T_MULRCOM]=55;
+    ForcastTable[N_SEG-50][T_SYSRCOM]=55;
+    ForcastTable[N_SEG-50][T_JRCOM]=55;
+    ForcastTable[N_SEG-50][T_BGICOM]=55;
+
     ForcastTable[N_STARTSEGID-50][T_IDNAME]=23;
     ForcastTable[N_ORDER-50][T_RCOM]=24;
     ForcastTable[N_ORDER-50][T_SRCOM]=24;
@@ -76,18 +120,19 @@ void InitForcastTable(int ForcastTable[VN_NUM][VT_NUM])
 	ForcastTable[N_ORDERS-50][T_PCOM]=41;
 	ForcastTable[N_ORDERS-50][T_JBCOM]=41;
 	ForcastTable[N_ORDERS-50][T_NOP]=41;
-	ForcastTable[N_ORDERS-50][T_IDNAME]=42;
-	ForcastTable[N_ORDERS-50][T_END]=43;
-	ForcastTable[N_SUBSEGID-50][T_IDNAME]=44;
-	ForcastTable[N_ENDSEGID-50][T_END]=45;
-	ForcastTable[N_CODEENDS-50][T_CODE]=46;
-
 	ForcastTable[N_ORDERS-50][T_MRCOM]=41;
 	ForcastTable[N_ORDERS-50][T_MFCRCOM]=41;
 	ForcastTable[N_ORDERS-50][T_MULRCOM]=41;
 	ForcastTable[N_ORDERS-50][T_SYSRCOM]=41;
 	ForcastTable[N_ORDERS-50][T_JRCOM]=41;
 	ForcastTable[N_ORDERS-50][T_BGICOM]=41;
+    ForcastTable[N_ORDERS-50][T_IDNAME]=42;
+    ForcastTable[N_ORDERS-50][T_FILEEND]=43;
+    ForcastTable[N_ORDERS-50][T_CODE]=43;
+
+    ForcastTable[N_SUBSEGID-50][T_IDNAME]=44;
+    ForcastTable[N_ENDSEGID-50][T_END]=45;
+    ForcastTable[N_CODEENDS-50][T_CODE]=46;
 
 	ForcastTable[N_COM-50][T_MRCOM]=47;
     ForcastTable[N_COM-50][T_MFCRCOM]=48;
@@ -128,10 +173,9 @@ void InitSyntacticRules(int SyntacticRules[RULE_NUM][RULE_DEPTH])
 	SyntacticRules[1][1]=N_DATA;
 
 	//RULE 2: N_DATA -> T_DATA N_DATAB N_DATAA
-	SyntacticRules[2][0] = N_DATAENDS;
-	SyntacticRules[2][1] = N_DATAA;
-	SyntacticRules[2][2] = N_DATAB;
-	SyntacticRules[2][3] = T_DATA;
+	SyntacticRules[2][0] = N_DATAA;
+	SyntacticRules[2][1] = N_DATAB;
+	SyntacticRules[2][2] = T_DATA;
 	//RULE 3: N_DATAB -> ENDL
 	SyntacticRules[3][0] = T_ENDL;
 	//RULE 4: N_DATAB -> T_ADDR T_ENDL
@@ -181,28 +225,28 @@ void InitSyntacticRules(int SyntacticRules[RULE_NUM][RULE_DEPTH])
 	SyntacticRules[16][0]=T_ENDL;
 	SyntacticRules[16][1]=T_ENDS;
 	SyntacticRules[16][2]=T_DATA;
-	//RULE 17: N_CODE->N_CODESEG N_CODEA N_CODEENDS
-	SyntacticRules[17][0]=N_CODEENDS;
+	//RULE 17: N_CODE->N_CODESEG N_CODEA N_CODE
+    SyntacticRules[17][0]=N_CODE;
 	SyntacticRules[17][1]=N_CODEA;
 	SyntacticRules[17][2]=N_CODESEG;
-	//RULE 18: N_CODESEG->T_CODE T_SEG T_ENDL
+    //RULE 56: N_CODE->nothing
+	//RULE 18: N_CODESEG->T_CODE T_ADDR T_ENDL
 	SyntacticRules[18][0]=T_ENDL;
-	SyntacticRules[18][1]=T_SEG;
+	SyntacticRules[18][1]=T_ADDR;
 	SyntacticRules[18][2]=T_CODE;
-	//RULE 19: N_CODEA->N_ORG_CODE N_SEG
-	SyntacticRules[19][0]=N_SEG;
-	SyntacticRules[19][1]=N_ORG_CODE;
-	//RULE 20: N_CODEA->N_SEG
-	SyntacticRules[20][0]=N_SEG;
-	//RULE 21: N_ORG_CODE->T_ORG_CODE T_ADDR T_ENDL
-	SyntacticRules[21][0]=T_ENDL;
-	SyntacticRules[21][1]=T_ADDR;
-	SyntacticRules[21][2]=T_ORG_CODE;
-	//RULE 22: N_SEG->N_STARTSEGID N_ORDER N_ORDERS N_ENDSEGID
-	SyntacticRules[22][0]=N_ENDSEGID;
-	SyntacticRules[22][1]=N_ORDERS;
-	SyntacticRules[22][2]=N_ORDER;
-	SyntacticRules[22][3]=N_STARTSEGID;
+	//RULE 20: N_CODEA->N_SEG N_CODEA
+	SyntacticRules[20][0]=N_CODEA;
+    SyntacticRules[20][1]=N_SEG;
+    //RULE 21: N_CODEA->nothing TODO(lamuguo)
+
+	//RULE 22: N_SEG->N_STARTSEGID N_ORDER N_ORDERS
+	SyntacticRules[22][0]=N_ORDERS;
+	SyntacticRules[22][1]=N_ORDER;
+	SyntacticRules[22][2]=N_STARTSEGID;
+    //RULE 55: N_SEG->N_ORDER N_ORDERS
+    SyntacticRules[55][0]=N_ORDERS;
+    SyntacticRules[55][1]=N_ORDER;
+
 	//RULE 23: N_STARTSEGID->T_IDNAME T_COLON
 	SyntacticRules[23][0]=T_COLON;
 	SyntacticRules[23][1]=T_IDNAME;
