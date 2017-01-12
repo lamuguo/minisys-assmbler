@@ -1,55 +1,3 @@
-//RULE 1: N_PRO->N_DATA N_CODE
-//RULE 2: N_DATA->N_DATASEG N_DATAA N_DATAENDS
-//RULE 4: N_DATASEG->T_DATA T_SEG T_ENDL
-//RULE 5: N_DATAA->N_ORG_DATA N_VARS N_DATAA
-//RULE 6: N_DATAA->N_VARS N_DATAA
-//RULE 8: N_ORG_DATA->T_ORG_DATA T_ADDR T_ENDL
-
-// N_DATA -> T_DATA N_DATAB
-// N_DATAB -> T_ENDL
-// N_DATAB -> T_ADDR T_ENDL
-
-//RULE 9:N_VARS->N_VAR N_VARS
-//RULE 11:N_VAR->T_IDNAME T_DD T_16NUM N_VARA T_ENDL N_VARAA
-//RULE 12:N_VARA->T_COMMA T_16NUM N_VARA
-//RULE 14:N_VARAA->T_DD T_16NUM N_VARA T_ENDL N_VARAA
-//RULE 16: N_DATAENDS->T_DATA T_ENDS T_ENDL
-//RULE 17: N_CODE->N_CODESEG N_CODEA N_CODEENDS
-//RULE 18: N_CODESEG->T_CODE T_SEG T_ENDL
-//RULE 19: N_CODEA->N_ORG_CODE N_SEG
-//RULE 20: N_CODEA->N_SEG
-//RULE 21: N_ORG_CODE->T_ORG_CODE T_ADDR T_ENDL
-//RULE 22: N_SEG->N_STARTSEGID N_ORDER N_ORDERS N_ENDSEGID
-//RULE 23: N_STARTSEGID->T_IDNAME T_COLON
-//RULE 24: N_ORDER->N_COM T_ENDL
-//RULE 25: N_ORFER->N_ORG_CODE
-//RULE 26: N_COM->T_RCOM T_RD T_COMMA T_RS T_COMMA T_RT
-//RULE 27: N_COM->T_SRCOM  T_RS
-//RULE 28: N_COM->T_SLLRCOM T_RD T_COMMA T_RT T_COMMA T_SHAMT
-//RULE 29: N_COM->T_ICOM T_RT T_COMMA T_RS T_COMMA T_IMMEDIATE
-//RULE 30: N_COM->T_SICOM T_RT T_COMMA T_IMMEDIATE
-//RULE 31: N_COM->T_LWICOM T_RT T_COMMA N_IMMEDIATE T_BRS
-//RULE 32: N_COM->T_JCOM N_ADDR
-//RULE 33: N_COM->T_BICOM T_RT T_COMMA T_RS T_COMMA N_IMMEDIATE
-//RULE 34: N_COM->T_PCOM T_RS
-//RULE 35: N_COM->T_JBCOM T_RT T_COMMA T_RS T_COMMA N_IMMEDIATE
-//RULE 37: N_IMMEDIATE->T_IDNAME
-//RULE 38: N_IMMEDIATE->T_IMMEDIATE
-//RULE 39: N_ADDR->T_IDNAME
-//RULE 40: N_ADDR->T_ADDR
-//RULE 41: N_ORDERS->N_ORDER N_ORDERS
-//RULE 42: N_ORDERS->N_SUBSEGID N_ORDER N_ORDERS
-//RULE 44: N_SUBSEGID->T_IDNAME T_COLON
-//RULE 45: N_ENDSEGID->T_END T_IDNAME T_ENDL
-//RULE 46: N_CODEENDS->T_CODE T_ENDS T_ENDL
-//RULE 47: N_COM->T_MRCOM T_RD
-//RULE 48: N_COM->T_MFCRCOM T_RT T_COMMA T_RD N_CP0
-//RULE 49: N_COM->T_MULRCOM T_RS T_COMMA T_RT
-//RULE 50: N_COM->T_SYSRCOM
-//RULE 51: N_COM->T_JRCOM T_RD T_COMMA T_RS
-//RULE 52: N_COM->T_BGICOM T_RS T_COMMA N_ IMMEDIATE
-//RULE 53: N_CP0->T_COMMA T_SEL
-
 #include "assembler.h"
 #include "asmfunction.h"
 #include "asminit.h"
@@ -57,8 +5,8 @@
 #include <iomanip>
 #include <string>
 #include <bitset>
+#include <regex>
 #include <stdlib.h>
-
 
 char* strlwr(char* s) {
     unsigned char *ucs = (unsigned char *) s;
@@ -189,7 +137,7 @@ int assembler::Parser(string resultFile)
             HasError=Scanner(STACK.Depth[STACK.Top]);
             if(HasError==-1)    //词法错误
             {
-                cout<<"Lexer error"<<endl;
+                cout<<"Lexer error, EXPECTED [" << STACK.Depth[STACK.Top] << "]" << endl;
                 if(Error(ERROR_LEXICAL)==-1) //无法恢复
                 {
                     Fail();
@@ -210,9 +158,9 @@ int assembler::Parser(string resultFile)
 int assembler::Deduction()
 {
     LastRule=CurrentRule;  //保留前一个规则，可能有用
-    cout<<"LastRule"<<LastRule<<" "<<STACK.Depth[STACK.Top]<<"  "<<TOKEN.ID;
+    cout<<"LastRule <"<<LastRule<<"> "<<STACK.Depth[STACK.Top]<<"  "<<TOKEN.ID;
     CurrentRule=ForcastTable[STACK.Depth[STACK.Top]-50][TOKEN.ID];
-    cout<<" CurrentRule"<<CurrentRule<<endl;
+    cout<<" CurrentRule <"<<CurrentRule << ">" << endl;
     if(CurrentRule==0) return -1;
     for(int i=0;i<=RULE_DEPTH;i++)
     {
@@ -276,7 +224,7 @@ int assembler::Scanner(int TypeOfToken)
         case N_DATA:     //扫描T_DATA|T_CODE
             {
                 ReadAString(Temp);
-                if(strcmp(Temp,".code")==0) { TOKEN.ID=T_CODE; return 0; }      //识别出CODE
+                if(strcmp(Temp,".text")==0) { TOKEN.ID=T_CODE; return 0; }      //识别出CODE
                 else if(strcmp(Temp,".data")==0) { TOKEN.ID=T_DATA; return 0; } //识别出DATA
                 else { TOKEN.ID=ERROR_NPRO; return -1; }                       //出错，无法继续分析,程序终止
             }
@@ -288,11 +236,18 @@ int assembler::Scanner(int TypeOfToken)
                 else if(strcmp(Temp,".data")==0) { TOKEN.ID=T_DATA; return 0; }
                 else { TOKEN.ID=ERROR_TERMINAL; return -1; }    //终止
             }
+        case N_DATAB:
+            {
+                if (ScanAddress() == 0) {
+                    return 0;
+                }
+                return ScanEndl();
+            }
         case N_VARAA: //扫描T_DATA|T_IDNAME|T_DD|T_ORG_DATA
             {
                 if(ScanIdname()==0) return 0;
                 ReadAString(Temp);
-                if(strcmp(Temp,"dw")==0) { TOKEN.ID=T_DW; return 0; }
+                if(strcmp(Temp,"word")==0) { TOKEN.ID=T_DW; return 0; }
                 else if(strcmp(Temp,".data")==0) { TOKEN.ID=T_DATA; return 0; }
                 else if(strcmp(Temp,".org_data")==0) { TOKEN.ID=T_ORG_DATA; return 0; }
                 else { TOKEN.ID=ERROR_TERMINAL; return -1; }    //终止
@@ -344,7 +299,7 @@ int assembler::Scanner(int TypeOfToken)
             {
                 TOKEN.ID=T_CODE;
                 ReadAString(Temp);
-                if(strcmp(Temp,".code")==0)  return 0;
+                if(strcmp(Temp,".text")==0)  return 0;
                 else  return -1;             //滤过这个单词，认为已经识别
             }
         case N_CODEA: //扫描T_IDNAME|T_ORG_CODE
@@ -388,18 +343,10 @@ int assembler::Scanner(int TypeOfToken)
             }
         case N_ADDR:    //扫描T_IDNAME|T_ADDR
             {
-                if(ScanIdname()==0)  return 0;
+                if (ScanIdname() == 0)
+                    return 0;
                 else
-                {
-                    TOKEN.ID=T_ADDR;
-                    if(Scan16Radix(4)==0) return 0; //16进制最长是4位
-                    WriteAString();
-                    if(Scan10Radix(5)==0) return 0; //10进制最长是5位
-                    WriteAString();
-                    if(Scan2Radix(16)==0) return 0; //2进制最长是16位
-                    TOKEN.ID=ERROR_NADDR;           //可以修复的错误
-                    return -1;
-                }
+                    return ScanAddress();
             }
         case N_IMMEDIATE: //扫描T_IDNAME|T_IMMEDIATE
             {
@@ -531,7 +478,7 @@ int assembler::Scanner(int TypeOfToken)
         case T_DW:
             {
                 ReadAString(Temp);
-                if(strcmp(Temp,"dw")==0) return 0;
+                if(strcmp(Temp,".word")==0) return 0;
                 else return -1;
             }
         case T_COMMA:
@@ -643,31 +590,35 @@ int assembler::ScanIdname()
         }
     }
 }
-//扫描16进制数
-int assembler::Scan16Radix(int maxlen)
-{
-    char ch;
-    while(1)
-    {
-        ch=ReadAChar();
-        if(ch=='h'||ch=='H')
-        {
-            if(TOKEN.Idx==-1||TOKEN.Idx>maxlen) break;  //数据位数不对
-            char ch0=TOKEN.Content[0];
-            if((ch0>='a'&&ch0<='f')||(ch0>='A'&&ch0<='F'))    break; //第一位不允许是字母
-            if(TOKEN.Idx==maxlen&&TOKEN.Content[0]!='0')      break; //进行了0扩展 0FFFFH
-            TOKEN.Content[++TOKEN.Idx]='h';       //添加后缀，成功识别
-            strlwr(TOKEN.Content);                //转化为小写
-            return 0;
-        }
-        else if((ch>='0'&&ch<='9')||(ch>='a'&&ch<='f')||(ch>='A'&&ch<='F'))
-            TOKEN.Content[++TOKEN.Idx]=ch;
-        else
-            break;
-    }
-    WriteAChar(ch);
+
+int assembler::ScanAddress() {
+    TOKEN.ID = T_ADDR;
+    if(Scan16Radix(4)==0) return 0; //16进制最长是4位
+    WriteAString();
+    if(Scan10Radix(5)==0) return 0; //10进制最长是5位
+    WriteAString();
+    if(Scan2Radix(16)==0) return 0; //2进制最长是16位
+    TOKEN.ID=ERROR_NADDR;           //可以修复的错误
     return -1;
 }
+
+//扫描16进制数
+int assembler::Scan16Radix(int maxlen) {
+    static char Temp[COMMOM_SIZE]={'0'};
+    ReadAString(Temp);
+    // Add 2 chars for the prefix "0x".
+    if (TOKEN.Idx > maxlen + 2) {
+        return -1;
+    }
+    if (!std::regex_match(Temp, std::regex("0x[0-9a-f]*"))) {
+        return -1;
+    }
+    for (int i = 0; i <= TOKEN.Idx; ++i) {
+        TOKEN.Content[i] = TOKEN.Content[i + 2];
+    }
+    return 0;
+}
+
 //扫描2进制数
 int assembler::Scan2Radix(int maxlen)
 {
@@ -689,41 +640,22 @@ int assembler::Scan2Radix(int maxlen)
     WriteAChar(ch);
     return -1;
 }
+
 //扫描10进制数
 int assembler::Scan10Radix(int maxlen)
 {
-    char ch;
-    while(1)
-    {
-        ch=ReadAChar();
-        if(ch>='0'&&ch<='9')
-        {
-            TOKEN.Content[++TOKEN.Idx]=ch;
-            continue;
-        }
-        else if(ch=='d'||ch=='D')
-        {
-            if(TOKEN.Idx==-1||TOKEN.Idx>=maxlen)   break;
-            if(TOKEN.Content[0]=='0'&&TOKEN.Idx>0) break;  //01，001等情况
-            TOKEN.Content[++TOKEN.Idx]='d';    //添加后缀，成功识别
-            return 0;
-        }
-        else if(IsSeparate(ch))
-        {
-            if(TOKEN.Idx==-1||TOKEN.Idx>=maxlen)   break;
-            if(TOKEN.Content[0]=='0'&&TOKEN.Idx>0) break;  //01，001等情况
-            WriteAChar(ch);
-            return 0;
-        }
-        else
-        {
-            break;
-        }
-
+    static char Temp[COMMOM_SIZE]={'0'};
+    ReadAString(Temp);
+    // Add 2 chars for the prefix "0x".
+    if (TOKEN.Idx > maxlen) {
+        return -1;
     }
-    WriteAChar(ch);    //回写一个字符
-    return -1;
+    if (!std::regex_match(Temp, std::regex("[0-9]*"))) {
+        return -1;
+    }
+    return 0;
 }
+
 //扫描T_RS|T_RT|T_RD  正规式$v(0~1)|$a(0~3)|$t(0~9)|$s(0~9)|$i(0~1)|$sp|$ra|$zero|$(0~31)|$at|SR|Cause|EPC|Ebase
 int assembler::ScanReg()
 {
@@ -2557,11 +2489,11 @@ int assembler::ErrorLexical()
         {
             if(strcmp(TOKEN.Content,"")==0)
             {
-                efout<<"line "<<NumOfLine<<" : lexical error : missing  keyword \'dw\'\n";
+                efout<<"line "<<NumOfLine<<" : lexical error : missing  keyword \'.word\'\n";
             }
             else
             {
-                efout<<"line "<<NumOfLine<<" : \'"<<TOKEN.Content<<"\' : lexical error : misspelling keyword \'dw\'\n";
+                efout<<"line "<<NumOfLine<<" : \'"<<TOKEN.Content<<"\' : lexical error : misspelling keyword \'.word\'\n";
             }
             return 0;
         }

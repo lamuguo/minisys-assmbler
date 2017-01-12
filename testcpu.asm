@@ -2,7 +2,6 @@
 	NUM1  	.word 0x00000055          		  
 	NUM2  	.word 0x000000AA       			
 	NUM3  	.word 0x00000000    			
-
 .text	 0000
 start:lui   $1,0xFFFF
 	ori $28,$1,0xF000

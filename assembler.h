@@ -62,6 +62,7 @@ public:
 protected:
 	int ScanCom();
 	int ScanIdname();
+	int ScanAddress();
 	int Scan16Radix(int maxlen);
 	int Scan10Radix(int maxlen);
 	int Scan2Radix(int maxlen);

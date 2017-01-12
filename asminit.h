@@ -13,8 +13,8 @@ void InitForcastTable(int ForcastTable[VN_NUM][VT_NUM])
 	ForcastTable[N_PRO-50][T_DATA]=1;
 	ForcastTable[N_PRO-50][T_CODE]=1;
     ForcastTable[N_DATA-50][T_DATA]=2;
-    ForcastTable[N_DATA-50][T_CODE]=3;
-    ForcastTable[N_DATASEG-50][T_DATA]=4;
+	ForcastTable[N_DATAB-50][T_ENDL] = 3;
+	ForcastTable[N_DATAB-50][T_ADDR] = 4;
 	ForcastTable[N_DATAA-50][T_ORG_DATA]=5;
 	ForcastTable[N_DATAA-50][T_IDNAME]=6;
 	ForcastTable[N_DATAA-50][T_DATA]=7;
@@ -122,19 +122,22 @@ void InitSyntacticRules(int SyntacticRules[RULE_NUM][RULE_DEPTH])
 			SyntacticRules[i][j]=0;
 		}
 	}
+
     //RULE 1: N_PRO->N_DATA N_CODE
 	SyntacticRules[1][0]=N_CODE;
 	SyntacticRules[1][1]=N_DATA;
-    //RULE 2: N_DATA->N_DATASEG N_DATAA N_DATAENDS
-    SyntacticRules[2][0]=N_DATAENDS;
-	SyntacticRules[2][1]=N_DATAA;
-	SyntacticRules[2][2]=N_DATASEG;
-    //RULE 3: N_DATA->nothing
 
-	//RULE 4: N_DATASEG->T_DATA T_SEG T_ENDL
-	SyntacticRules[4][0]=T_ENDL;
-	SyntacticRules[4][1]=T_SEG;
-	SyntacticRules[4][2]=T_DATA;
+	//RULE 2: N_DATA -> T_DATA N_DATAB N_DATAA
+	SyntacticRules[2][0] = N_DATAENDS;
+	SyntacticRules[2][1] = N_DATAA;
+	SyntacticRules[2][2] = N_DATAB;
+	SyntacticRules[2][3] = T_DATA;
+	//RULE 3: N_DATAB -> ENDL
+	SyntacticRules[3][0] = T_ENDL;
+	//RULE 4: N_DATAB -> T_ADDR T_ENDL
+	SyntacticRules[4][0] = T_ENDL;
+	SyntacticRules[4][1] = T_ADDR;
+
 	//RULE 5: N_DATAA->N_ORG_DATA N_VARS N_DATAA
 	SyntacticRules[5][0]=N_DATAA;
 	SyntacticRules[5][1]=N_VARS;
@@ -441,14 +444,13 @@ void InitKeyWords(char *KeyWords[KEYWORDS_SIZE])
 	KeyWords[64]="jge";
 
 	//65-72:ORG_CODE
-	KeyWords[65]="org_code";
-	KeyWords[66]="org_data";
-	KeyWords[67]="code";
-	KeyWords[68]="data";
-	KeyWords[69]="dw";
-	KeyWords[70]="seg";
-	KeyWords[71]="end";
-	KeyWords[72]="ends";
+	KeyWords[65]=".org_code";
+	KeyWords[66]=".org_data";
+	KeyWords[67]=".text";
+	KeyWords[68]=".data";
+	KeyWords[69]=".word";
+	KeyWords[71]=".end";
+	KeyWords[72]=".ends";
 
 }
 
